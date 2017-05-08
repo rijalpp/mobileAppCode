@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyFirstBackground" >
+
+    <!--  Include Fragmented dashboard -->
+        <include layout="@layout/actionbar_layout"/>  
+     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tvWelcomeName"
+            style="@style/MyCaption"
+            android:layout_marginLeft="10dp"
+            android:text="Welcome Name"
+            android:textSize="12dp" />
+         <TextView
+            style="@style/MyCaption"
+            android:layout_marginLeft="10dp"
+            android:text="|"
+            android:textSize="12dp" />
+
+        <Button
+            android:id="@+id/btnLogOut"
+            style="@style/MyLogOutButton"
+            android:onClick="onClick"
+            android:text="Log Out" />
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spnCategories"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Select Category" ></Spinner>
+    <Button 
+        android:id="@+id/btnViewByCategory"
+        android:layout_marginTop="10dp"
+        android:onClick="onClick"
+        android:text="Category"
+        style="@style/MyActionButton"
+        android:layout_marginLeft="40dp" ></Button>
+        "
+    <RadioButton
+        android:id="@+id/rbtnMonth"
+        style="@style/MyRadioButton"
+        android:text="Current Budget Only"
+        android:textColor="#505257"
+        android:checked="true"
+        android:typeface="monospace" />
+     <ListView
+        android:id="@+id/lvExpenseList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp" >
+
+        <Button
+            android:id="@+id/btnAdd"
+            style="@style/MyActionButton"
+            android:layout_marginLeft="40dp"
+            android:onClick="onClick"
+            android:text="Add" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MyCancelButton"
+            android:onClick="onClick"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>

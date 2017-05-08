@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">Test1Task1</string>
+    <string name="hello_world">Tafe Application Form</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="hintWord">Enter your name</string>
+    <string name="career">Career</string>
+    <string name="hobby">Hobby</string>
+    <string name="submit">Submit</string>
+</resources>

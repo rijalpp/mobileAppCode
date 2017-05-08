@@ -1,0 +1,67 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyFirstBackground"
+    android:orientation="vertical" >
+    
+
+    <ToggleButton
+        android:id="@+id/tglLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:onClick="onToggleClicked"
+        android:textOff="Local Data"
+        android:textOn="Online Date"
+        android:typeface="monospace" />
+  
+
+    <EditText
+        android:id="@+id/edtEmail"
+        style="@style/MyTextBox"
+        android:layout_marginTop="60dp"
+        android:hint="Email Address" />
+
+    <EditText
+        android:id="@+id/edtPassword"
+        android:layout_marginTop="10dp"
+        style="@style/MyTextBox"
+        android:hint="Password"
+        android:password="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40px"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnLogin"
+             android:layout_marginTop="20dp"
+            style="@style/MyCoolButton"
+            android:text="Login"
+            />
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_marginTop="20dp" 
+            style="@style/MyCoolButton"
+            android:text="Register "
+            
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnforgotPassword"
+            style="@style/MyCoolButton"
+            android:layout_marginTop="25dp"
+            android:layout_width="200dp"
+              android:layout_marginLeft="60dp"
+            android:text="Forgot Password? " />
+    </LinearLayout>
+
+</LinearLayout>

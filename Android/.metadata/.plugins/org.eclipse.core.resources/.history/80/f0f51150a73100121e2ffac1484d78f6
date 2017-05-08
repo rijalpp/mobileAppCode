@@ -1,0 +1,58 @@
+package com.example.expensediary;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+public class ActivityViewExpenseWithCategory extends Activity {
+	
+	HelperSessionManagement session;
+	DataAccessManager manager;
+	private ArrayAdapter<Expense> adapter;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setContentView(R.layout.activity_viewexpensewithcategory);
+	
+	session = new HelperSessionManagement(this);
+	if(session.isLoggedIn()){
+	manager = new DataAccessManager(this);
+	manager.OpenForRetrieval();
+	
+	List<Expense> values = manager.SearchExpensesByUser(session.getUserID().toString());
+	adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, values);
+	
+	ListView lvExpenseList = (ListView) findViewById(R.id.lvExpenseList);
+	lvExpenseList.setAdapter(adapter);
+	}
+	
+	else{
+		Intent intent = new Intent("com.example.expensediary.ACTIVITYLOGIN");
+		startActivity(intent);
+	}
+	
+	}
+	
+	public void onClick(View v){
+		String newIntent ="";
+		switch(v.getId()){
+		
+		case R.id.btnAddCategory:
+			newIntent = "com.example.expensediary.ACTIVITYCATEGORY";
+			break;
+		case R.id.btnCancel:
+			newIntent ="com.example.expensediary.ACTIVITYDASHBOARD";
+			break;
+		}
+		
+		Intent intent = new Intent(newIntent);
+		startActivity(intent);
+	}
+
+}

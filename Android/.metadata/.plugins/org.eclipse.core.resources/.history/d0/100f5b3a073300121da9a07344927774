@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyFirstBackground" >
+<!--  Include Fragmented dashboard -->
+        <include layout="@layout/actionbar_layout"/>   
+    <TextView
+        android:id="@+id/tvWelcomeName"
+        style="@style/MyCaption"
+        android:layout_marginLeft="200dp"
+        android:text="Welcome Name"
+        android:textSize="12dp" />
+
+    <LinearLayout
+        style="@style/MySecondBackground"
+        android:layout_marginTop="50dp" >
+
+        <Button
+            android:id="@+id/btnViewBalance"
+            style="@style/MyActionButton"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="150dp"
+            android:text="View" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MyCancelButton"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>

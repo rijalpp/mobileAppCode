@@ -1,0 +1,46 @@
+package com.example.expensediary;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+
+public class ActivityCategory extends Activity implements OnClickListener {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_category);
+		
+		//GETTING CONTROL DETAILS FROM LAYOUT
+		Button btnAddCategory = (Button)findViewById(R.id.btnAddCategory);
+		Button btnCancel = (Button)findViewById(R.id.btnCancel);
+		
+		//SETTING ON CLICK LISTENER
+		btnAddCategory.setOnClickListener(this);
+		btnCancel.setOnClickListener(this);
+		
+	}
+	
+	public void onClick(View v) {
+		switch(v.getId())
+		{
+		case R.id.btnAddCategory:
+			//TODO add category 
+			break;
+		case R.id.btnCancel:
+			Intent goToDashBoard = new Intent("com.example.expensediary.ACTIVITYDASHBOARD");
+			startActivity(goToDashBoard);
+			break;
+		}
+	}
+	
+	public Category AddCategory(){
+		
+		return null;
+	}
+
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <EditText
+android:id="@+id/nameToAdd"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:hint="Name"
+android:inputType="text" />
+<EditText
+android:id="@+id/heightToAdd"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:hint="Height"
+android:inputType="numberDecimal" />
+<Button
+android:id="@+id/add"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:onClick="onClick"
+android:text="Add" />
+<TextView
+android:id="@+id/searchTitle"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:text="Find an Entry:"
+android:textSize="20dp"
+android:textStyle="bold" />
+<Spinner
+android:id="@+id/searchName"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content" />
+<Button
+android:id="@+id/searchName"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:onClick="onClick"
+android:text="Search" />
+<LinearLayout
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal" >
+<EditText
+android:id="@+id/minHeight"
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:layout_weight="1.0"
+android:hint="Min. Height"
+android:inputType="numberDecimal" />
+<EditText
+android:id="@+id/maxHeight"
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:layout_weight="1.0"
+android:hint="Max. Height"
+android:inputType="numberDecimal" />
+</LinearLayout>
+<Button
+android:id="@+id/searchHeight"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:onClick="onClick"
+android:text="Search" />
+<Button
+android:id="@+id/showAll"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:onClick="onClick"
+android:text="Show All" />
+<ListView
+android:id="@+id/list"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent" />
+    
+</LinearLayout>

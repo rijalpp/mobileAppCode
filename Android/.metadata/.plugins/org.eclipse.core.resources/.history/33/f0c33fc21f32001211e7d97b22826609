@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyFirstBackground" >
+
+    <TextView
+        android:id="@+id/tvWelcomeName"
+        style="@style/MyCaption"
+        android:layout_marginLeft="200dp"
+        android:text="Welcome Name"
+        android:textSize="12dp" />
+
+    <ListView
+android:id="@+id/lsBudget"
+android:layout_width="match_parent"
+android:layout_height="wrap_content" />
+
+    <LinearLayout style="@style/MySecondBackground" >
+
+        <Button
+            android:id="@+id/btnAddBudget"
+            style="@style/MyActionButton"
+            android:layout_marginLeft="35dp"
+            android:text="Add" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MyCancelButton"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>

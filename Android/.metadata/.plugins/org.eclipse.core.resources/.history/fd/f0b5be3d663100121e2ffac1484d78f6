@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     style="@style/MyFirstBackground"
+    android:orientation="vertical" >
+   
+
+        <TextView
+            android:id="@+id/tvFullName"
+          
+            style="@style/MyCaption"
+            android:layout_marginTop="50dp"
+            android:text="Full Name:" />
+
+        <EditText
+            android:id="@+id/edtFullName"
+        
+            style="@style/MyTextBox"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:id="@+id/tvEmail"
+
+            style="@style/MyCaption"
+             android:layout_marginTop="5dp" 
+            android:text="Email Address:" />
+
+        <EditText
+            android:id="@+id/edtEmail"
+            
+            style="@style/MyTextBox" />
+
+        <TextView
+            android:id="@+id/tvPassword"
+      
+            style="@style/MyCaption"
+             android:layout_marginTop="5dp" 
+            android:text="Password:" />
+
+        <EditText
+            android:id="@+id/edtPassword"
+
+             android:layout_marginTop="5dp"
+            style="@style/MyTextBox" />
+
+        <TextView
+            android:id="@+id/tvConfirmPassword"
+  
+            style="@style/MyCaption"
+             android:layout_marginTop="5dp" 
+            android:text="Confirm Password:" />
+
+        <EditText
+             android:layout_marginTop="5dp" 
+            android:id="@+id/edtConfirmPassword"
+            style="@style/MyTextBox" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+           >
+
+        <Button
+            android:id="@+id/btnRegister"
+            style="@style/MyActionButton"
+            android:layout_marginLeft="40dp"
+            android:layout_height="25dp"
+            android:text="Register" />
+        <Button
+            android:id="@+id/btnCancel"
+             android:layout_height="30dp"
+            style="@style/MyCancelButton"
+            android:text="Cancel" />
+        
+        
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,59 @@
+package com.example.expensediary;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+
+public class ActivitySetBudget extends Activity implements OnClickListener {
+
+	HelperSessionManagement session;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_setbudget);
+		//
+		session = new HelperSessionManagement(this);
+		if(session.isLoggedIn()){
+		Button btnSetBudget = (Button)findViewById(R.id.btnSetBudget);
+		Button btnCancel = (Button)findViewById(R.id.btnCancel);
+		
+		btnSetBudget.setOnClickListener(this);
+		btnCancel.setOnClickListener(this);
+		}
+		else{
+			session.logoutUser(); 
+		}
+	}
+
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch(v.getId())
+		{
+		case R.id.btnSetBudget:
+			//set budget to the database
+			break;
+			
+		case R.id.btnCancel:
+			Intent goToDashBoard = new Intent("com.example.expensediary.ACTIVITYDASHBOARD");
+			startActivity(goToDashBoard);
+			break;
+		}
+		
+	}
+	
+	private Goal AddGoal(){
+		
+		EditText edtMonth = (EditText)findViewById(R.id.edtMonth);
+		EditText edtNote = (EditText)findViewById(R.id.edtNote);
+		EditText edtAmount = (EditText)findViewById(R.id.edtAmount);
+		
+		Goal goal = new Goal();
+		goal.set
+	}
+
+}

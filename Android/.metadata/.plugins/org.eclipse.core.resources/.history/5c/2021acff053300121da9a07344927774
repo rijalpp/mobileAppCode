@@ -1,0 +1,134 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.expensediary"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".Welcome"
+            android:label="@string/title_activity_login" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Login"
+            android:label="@string/title_activity_login" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.LOGIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AddExpense"
+            android:label="@string/title_activity_add_expense" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ADDEXPENSE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityRegistration"
+            android:label="@string/title_activity_add_expense" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYREGISTRATION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityDashBoard"
+            android:label="@string/title_activity_add_expense" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYDASHBOARD" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityForgotPassword"
+            android:label="@string/title_activity_add_expense" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYFORGOTPASSWORD" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityCategory"
+            android:label="@string/title_activity_add_expense" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYCATEGORY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityViewCategory"
+            android:label="Category List" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYVIEWCATEGORY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivitySetBudget"
+            android:label="Budget Management - New" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYSETBUDGET" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityViewBudget"
+            android:label="Budget Management - View" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYVIEWBUDGET" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityViewExpense"
+            android:label="@string/title_activity_add_expense" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYVIEWEXPENSE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityViewExpenseWithCategory"
+            android:label="Expenses View" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYVIEWEXPENSEWITHCATEGORY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ActivityViewBalance"
+            android:label="Expenses View Balance" >
+            <intent-filter>
+                <action android:name="com.example.expensediary.ACTIVITYVIEWBALANCE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

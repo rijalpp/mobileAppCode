@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyFirstBackground" >
+
+    <TextView
+        android:layout_marginTop="50dp"
+        android:id="@+id/tvEmail"
+        style="@style/MyCaption"
+        android:text="Password will be sent to verified email" />
+
+    <EditText
+        android:id="@+id/edtEmail"
+        style="@style/MyTextBox"
+        android:layout_marginTop="30dp"
+        android:hint="Email Address" />
+
+    <LinearLayout
+        style="@style/MySecondBackground"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnSubmit"
+            style="@style/MyActionButton"
+            android:layout_marginLeft="36dp"
+            android:text="Submit" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MyCancelButton"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>

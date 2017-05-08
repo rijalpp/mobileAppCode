@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   style="@style/MyFirstBackground"
+    android:orientation="vertical" >
+ <!--  Include Fragmented dashboard -->
+        <include layout="@layout/actionbar_layout"/>   
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tvWelcomeName"
+            style="@style/MyCaption"
+            android:layout_marginLeft="10dp"
+            android:text="Welcome Name"
+            android:textSize="12dp" />
+         <TextView
+            style="@style/MyCaption"
+            android:layout_marginLeft="10dp"
+            android:text="|"
+            android:textSize="12dp" />
+
+        <Button
+            android:id="@+id/btnLogOut"
+            style="@style/MyLogOutButton"
+            android:text="Log Out" />
+    </LinearLayout>
+
+        <TextView
+           
+            android:id="@+id/tvCategory"
+            style="@style/MyCaption"
+            android:layout_marginTop="50dp"
+           
+            android:text="Add Category:" />
+
+        <EditText
+       
+            android:id="@+id/edtCategory"
+          
+            style="@style/MyTextBox" />
+
+        <TextView
+            android:id="@+id/tvDescription"
+            style="@style/MyCaption"
+            android:text="Description:" />
+
+        <EditText
+            android:id="@+id/edtDescription"
+           
+            style="@style/MyTextBox"
+            android:layout_height="70dp" />
+     <LinearLayout
+       style="@style/MySecondBackground" >
+        <Button
+            android:id="@+id/btnAddCategory"
+            android:layout_marginLeft="45dp"
+            style="@style/MyShortButton"
+            android:text="Add" />
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MyShortButton"
+            
+            android:text="Cancel" />
+        
+        <Button
+            android:id="@+id/btnView"
+            style="@style/MyShortButton"
+            android:text="View" />
+        </LinearLayout>
+  
+
+</LinearLayout>

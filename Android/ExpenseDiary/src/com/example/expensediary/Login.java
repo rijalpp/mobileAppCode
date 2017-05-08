@@ -1,0 +1,204 @@
+package com.example.expensediary;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+import android.widget.EditText;
+
+public class Login extends Activity implements OnClickListener {
+    
+	//declaring the class to help manage the sesion
+	HelperSessionManagement session;
+	static String dataViewMode = "LocalOnly";
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        session = new HelperSessionManagement(this);
+        final ToggleButton tglLogin = (ToggleButton)findViewById(R.id.tglLogin);
+        final Button btnLogin = (Button)findViewById(R.id.btnLogin);
+        final Button btnforgotPassword = (Button)findViewById(R.id.btnforgotPassword);
+        final Button btnRegister = (Button)findViewById(R.id.btnRegister);
+        //CLICK EVENT FOR THE TOGGLE BUTTON.
+        tglLogin.setOnClickListener(this);
+        //CLICK EVENT FOR THE LOGIN BUTTON
+        btnLogin.setOnClickListener(this);
+        //CLICK EVENT FOR THE FORGOTPASSWORD BUTTON
+        btnforgotPassword.setOnClickListener(this);
+        
+        //CLICK EVENT FOR THE REGISTER BUTTON
+        btnRegister.setOnClickListener(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_login, menu);
+        return true;
+    }
+
+	public void onClick(View v) {
+		String intentValue = "";
+			switch(v.getId()){
+			case R.id.tglLogin:
+				//dataViewMode=dataViewMode=="LocalOnly"?"WebOnly":"LocalOnly";
+				session.setUserRecordMode(dataViewMode);
+				break;
+			case R.id.btnLogin:
+				User user = loginToApplication();
+				
+				if(user != null)
+				{
+					if(user.getEmail()!= null)
+					{
+						//SAVE USER INFORMATION IN THE SESSION
+					session.createLoginSession(user);
+					intentValue = "com.example.expensediary.ACTIVITYDASHBOARD";
+					}
+					else{
+						
+						//Toast.makeText(getBaseContext(),"Opps! Error occured, please try again.", Toast.LENGTH_SHORT).show();
+						HelperDialogManager dialogManager = new HelperDialogManager();
+						dialogManager.showAlertDialog(this, user.getEmail(), "Login attempt failed. Please try again", false);
+						return;
+						
+					}
+				}
+				else{
+					//Toast.makeText(getBaseContext(),"Opps! Error occured, please try again.", Toast.LENGTH_SHORT).show();
+					HelperDialogManager dialogManager = new HelperDialogManager();
+					dialogManager.showAlertDialog(this, "Login Failed", "Login attempt failed. Please try again", false);
+					return;
+				}
+				break;
+			case R.id.btnforgotPassword:
+				intentValue = "com.example.expensediary.ACTIVITYFORGOTPASSWORD";
+				Intent goToForogotPassword = new Intent("com.example.expensediary.ACTIVITYFORGOTPASSWORD");
+				startActivity(goToForogotPassword);
+				break;
+			case R.id.btnRegister:
+				intentValue = "com.example.expensediary.ACTIVITYREGISTRATION";
+				break;
+			}
+			
+			Intent newIntent = new Intent(intentValue);
+			startActivity(newIntent);
+			
+	}
+	//PRIVATE FUNCTIONS
+	private User loginToApplication(){
+		
+		String email = ((EditText)findViewById(R.id.edtEmail)).getText().toString();
+		String password = ((EditText)findViewById(R.id.edtPassword)).getText().toString(); 
+		
+		//dataViewMode = (session.getUserRecordMode()==null||session.getUserRecordMode()=="Sync")?"LocalOnly":session.getUserRecordMode();
+		
+		if(dataViewMode == "LocalOnly")
+		{
+			try {
+				User user = new User();
+				DataAccessManager manager = new DataAccessManager(Login.this);
+				manager.OpenForRetrieval();
+				user = manager.GetUserDetails(email, password);
+				manager.Close();
+				return user;
+			} catch (SQLiteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (NullPointerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Log.v("Login exception: ", "Please view the details above");
+			}
+		}
+		
+		else
+		{
+			//TextView result = (TextView) findViewById(R.id.authenticateResult);
+			  String requestUrl = "http://www.expensediary.sleeksurf.com/api/user/1";
+			 // String authenticate = InvokeService(requestUrl);
+			  //result.setText(authenticate);
+			  //GET SINGLE USER
+			  User user = new User();
+			  String getUser = InvokeService(requestUrl);
+			  try {
+			   JSONObject jsonObj = new JSONObject(getUser);
+			   user.setUserID(jsonObj.getInt("UserID"));
+			   user.setEmail(jsonObj.getString("Email"));
+			   user.setFullName(jsonObj.getString("FullName"));
+			   user.setRecordMode(jsonObj.getString("RecordMode"));
+			  } catch (Exception e) {
+			   // TODO: handle exception
+				  Log.v("EXCEPTION OCCURED WHILE RETURNING FROM WERSERVICE", "testing");
+			  }
+			
+		}
+		
+		return null;
+	}
+	
+	public String InvokeService(String url) {
+		  StringBuilder builder = new StringBuilder();
+		  HttpClient client = new DefaultHttpClient();
+		  HttpGet httpGet = new HttpGet(url);
+		  try {
+		   HttpResponse response = client.execute(httpGet);
+		   StatusLine statusLine = response.getStatusLine();
+		   int statusCode = statusLine.getStatusCode();
+		   if (statusCode == 200) {
+		    HttpEntity entity = response.getEntity();
+		    InputStream content = entity.getContent();
+		    BufferedReader reader = new BufferedReader(
+		      new InputStreamReader(content));
+		    String line;
+		    while ((line = reader.readLine()) != null) {
+		     builder.append(line);
+		    }
+		   }
+		  } catch (ClientProtocolException e) {
+		   e.printStackTrace();
+		  } catch (IOException e) {
+		   e.printStackTrace();
+		  }
+		  return builder.toString();
+		 }
+}

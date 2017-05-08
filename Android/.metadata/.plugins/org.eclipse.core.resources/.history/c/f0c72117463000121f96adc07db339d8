@@ -1,0 +1,318 @@
+package com.example.expensediary;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.R.bool;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+public class DataAccessManager {
+
+	//******************************REGION DATABASE AND TABLE DECLARATION********************************************//
+	//DATABASE DETAILS
+	private static final String Database_ExpenseDiaryDB = "ExpenseDiaryDB";
+	private static final int Database_Version = 1;
+	
+	//USERS TABLE DETAILS
+	private static final String Table_User ="Users";
+	public static final String User_Email ="Email";
+	public static final String User_FullName = "FullName";
+	public static final String User_Password = "Password";
+	public static final String User_RecordMode = "RecordMode";
+	
+	private static final String create_Table_User = "CREATE TABLE "+Table_User+" ("+
+	                                             User_Email+" TEXT PRIMARY KEY, "+
+			                                     User_FullName+" TEXT NOT NULL, "+
+	                                             User_Password+" TEXT NOT NULL, " +
+	                                             User_RecordMode+" TEXT NOT NULL);";
+	//CATEGORIES TABLE DETAILS
+	private static final String Table_Category = "Categories";
+	public static final String Category_CategoryID ="CategoryID";
+	public static final String Category_Name = "Name";
+	public static final String Category_Description = "Description";
+	public static final String Category_Email = "Email";
+	public static final String Category_RecordMode = "RecordMode";
+	
+	private static final String create_Table_Category ="CREATE TABLE "+Table_Category+" ("+	
+	                                                    Category_CategoryID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+			                                            Category_Name+" TEXT NOT NULL, "+
+	                                                    Category_Description+" TEXT NULL, "+
+			                                            Category_Email+" TEXT NOT NULL, "+
+	                                                    Category_RecordMode+" TEXT NOT NULL);";
+	
+	//GOALS TABLE DETAILS
+	private static final String Table_Goal = "Goals";
+	public static final String Goal_Month = "Month";
+	public static final String Goal_Year = "Year";
+	public static final String Goal_TargetExpense = "TargetExpense";
+	public static final String Goal_Note = "Note";
+	public static final String Goal_Email = "Email";
+	public static final String Goal_RecordMode = "RecordMode";
+	
+	public static final String create_Table_Goal = "CREATE TABLE "+Table_Goal+" ("+
+	                                                Goal_Month+" TEXT NOT NULL, "+
+			                                        Goal_Year+" TEXT NOT NULL, "+
+	                                                Goal_TargetExpense+" REAL NOT NULL, "+
+			                                        Goal_Note+" TEXT NULL, "+
+	                                                Goal_Email+" TEXT NOT NULL, "+
+			                                        Goal_RecordMode+" TEXT NOT NULL);";
+	                                                
+	
+	//EXPENSES TABLE DETAILS
+	private static final String Table_Expense = "Expenses";
+	public static final String Expense_ExpenseID = "ExpenseID";
+	public static final String Expense_Amount = "Amount";
+	public static final String Expense_ExpenseDate = "ExpenseDate"; 
+	public static final String Expense_Description = "Description"; 
+	public static final String Expense_CategoryID = "CategoryID";
+	public static final String Expense_RecordMode = "RecordMode";
+	
+	public static final String create_Table_Expense = "CREATE TABLE "+Table_Expense+" ("+
+	                                                   Expense_ExpenseID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+			                                           Expense_Amount+" REAL NOT NULL, "+
+	                                                   Expense_ExpenseDate+" TEXT NOT NULL, "+
+	                                                   Expense_CategoryID+" INTEGER NOT NULL, "+
+	                                                   Expense_RecordMode+" TEXT NOT NULL);";
+	
+	//**************************************END OF DATABASE AND TABLE DECLARATION REGION*************************************//
+														
+	//**************************************REGION DATABASE AND TABLE CREATION AND DATABASE RELATED CLASS AND METHODS*********//
+	//CREATING SQLITE RELATED CLASS VARIABLES
+	private DBHelper ourHelper;
+	private final Context ourContext;
+	private SQLiteDatabase ourDatabase;
+	
+	//CREATING NEW SUB CLASS
+	private static class DBHelper extends SQLiteOpenHelper{
+
+		public DBHelper(Context context) {
+			super(context, Database_ExpenseDiaryDB, null, Database_Version);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			// TODO Auto-generated method stub
+			
+			db.execSQL(create_Table_User);
+			db.execSQL(create_Table_Category);
+			db.execSQL(create_Table_Goal);
+			db.execSQL(create_Table_Expense);
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			// TODO Auto-generated method stub
+			db.execSQL("DROP TABLE IF EXISTS "+Table_User);
+			db.execSQL("DROP TABLE IF EXISTS "+Table_Category);
+			db.execSQL("DROP TABLE IF EXISTS "+Table_Goal);
+			db.execSQL("DROP TABLE IF EXISTS "+Table_Expense);
+			onCreate(db);
+		}
+		
+		
+	}//SUB CLASS DB HELPER ENDS HERE.
+	
+	//CONSTRUCTOR
+	public DataAccessManager(Context c){
+		this.ourContext = c;
+	}
+	
+	//USED TO OPEN THE DATABASE FOR INSERTING THE DATA
+	public DataAccessManager OpenForInsertion() throws SQLiteException{
+		ourHelper = new DBHelper(ourContext);
+		ourDatabase = ourHelper.getWritableDatabase();
+		return this;
+	}
+	//USED TO OPEN THE DATABASE FOR RETRIEVING THE DATA.
+	public DataAccessManager OpenForRetrieval() throws SQLiteException{
+		ourHelper = new DBHelper(ourContext);
+		ourDatabase = ourHelper.getReadableDatabase();
+		return this;
+	}
+	//USED TO CLOSE THE DATABASE
+	public void Close(){
+		ourHelper.close();
+	}
+	
+	//***********************END OF REGION DATABASE AND TABLE CREATION, DATABASE RELATED CLASS AND METHODS**********//
+	
+	//***********************************REGION OF USER****************************************// 
+	
+	//THE FOLLOWING ARRAY IS DEFINED TO RETRIEVE THE RECORDS OF THE COLUMNS IN THE ARRAY WHICH IS PASSED TO QUERY.
+	private String[] columnsUser = {User_Email, User_FullName, User_Password, User_RecordMode};
+	
+	//THE METHOD BELOW IS CALLED TO CONVERT EACH RECORD OF CURSOR TO USER OBJECT.
+	private User CursorToUser(Cursor cursor){
+		
+		User user = new User();
+		
+		int userEmailIndex = cursor.getColumnIndex(User_Email);
+		int userFullNameIndex = cursor.getColumnIndex(User_FullName);
+		int userPasswordIndex = cursor.getColumnIndex(User_Password);
+		int userRecordModeIndex = cursor.getColumnIndex(User_RecordMode);
+		
+		user.setEmail(cursor.getString(userEmailIndex));  	    //RETRIEVING EMAIL WHOSE INDEX IN DATABASE IS 0
+		Log.v("Email Address testing: ",user.getEmail());
+		user.setFullName(cursor.getString(userFullNameIndex));	    //RETRIEVING FULLNAME WHOSE INDEX IN TABLE IS 
+		user.setPassword(cursor.getString(userPasswordIndex));		//RETRIEVING PASSWORD WHOSE INDEX IN TABLE IS 2
+		user.setRecordMode(cursor.getString(userRecordModeIndex));	//RETRIEVING RECORDMODE WHOSE INDEX IN TABLE IS 3.
+		
+		return user;
+	}
+	
+	//THE METHOD BELOW IS USED TO GET USER DETAILS BY EMAIL
+	public User GetUserDetails(String email){
+		
+		 try {
+			 User user = new User();
+			//QUERY THE DATABASE
+			 Cursor cursor = ourDatabase.query(Table_User, columnsUser, User_Email+"="+email, null, null, null, null);
+			 if(cursor!= null)
+			 {
+			// MOVE THE CURSOR TO THE FIRST ROW OF THE ROWS RETURNED BY THE QUERY
+			 cursor.moveToFirst();
+			 //CONVERT THE CURSOR TO USER OBJECT.
+			 user = CursorToUser(cursor);
+			 }
+			 cursor.close();
+			 //RETURN THE USER OBJECT
+			 return user;
+		} catch (CursorIndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.v("Exception occured just above", "check above line.");
+		}
+		 
+		 return null;
+	}
+	
+	//THIS METHOD IS USED WHEN USER LOGS IN USING EMAIL AND PASSWORD.
+	public User GetUserDetails(String email, String password){
+		
+		 try {
+			User user = new User();
+			 //QUERY THE DATABASE
+			 Cursor cursor = ourDatabase.query(Table_User, columnsUser, User_Email+"=?",new String[]{email}, null, null, null, null);
+			 //if(cursor!= null)
+			 //{
+			// MOVE THE CURSOR TO THE FIRST ROW OF THE ROWS RETURNED BY THE QUERY
+			 cursor.moveToFirst();
+			 //CONVERT THE CURSOR TO USER OBJECT.
+			 user = CursorToUser(cursor);
+			// }
+			 cursor.close();
+			 if(user != null){
+			 if(user.getPassword().equals(password))
+			 //RETURN THE USER OBJECT
+			 return user;
+			 else
+				 return null;
+			 }
+			 else
+				 return null;
+		} catch (CursorIndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.v("Index out of bound Exception occured just above", "check above lines.");
+		}
+		 
+		 return null;
+		
+	}
+	
+	//THIS METHOD IS USED TO RETRIEVE ALL THE USERS.
+	public List<User> GetUsers(){
+		
+		List<User> userList = new ArrayList<User>();
+		
+		Cursor cursor = ourDatabase.query(Table_User, columnsUser, null, null, null, null, null);
+		
+		cursor.moveToFirst();
+		
+		while(!cursor.isAfterLast()){
+			
+			User user = CursorToUser(cursor);
+			
+			userList.add(user);
+			
+			cursor.moveToNext();
+			
+		}
+		
+		cursor.close();
+		
+		return userList;
+	}
+	//RETRIEVES THE USERS BASED ON RECORD MODE.
+	public List<User> GetUsers(String recordMode){
+		
+        List<User> userList = new ArrayList<User>();
+		
+		Cursor cursor = ourDatabase.query(Table_User, columnsUser, User_RecordMode+"="+recordMode, null, null, null, null);
+		
+		cursor.moveToFirst();
+		
+		while(!cursor.isAfterLast()){
+			
+			User user = CursorToUser(cursor);
+			
+			userList.add(user);
+			
+			cursor.moveToNext();
+			
+		}
+		
+		cursor.close();
+		
+		return userList;
+		
+	}
+	
+	//THIS METHOD IS USED TO CREATE USER IN THE DATABASE
+	public User CreateUser(User user){
+		
+		ContentValues cv = new ContentValues();
+		cv.put(User_Email, user.getEmail());
+		cv.put(User_FullName, user.getFullName());
+		cv.put(User_Password, user.getPassword());
+		cv.put(User_RecordMode, user.getRecordMode());
+		long i = ourDatabase.insert(Table_User, null, cv);
+		if(i>0)
+		return user;
+		else
+			return null;
+	}
+	
+	//THIS METHOD IS USED TO UPDATE USER IN THE DATABASE
+	public User UpdateUser(User user){
+		ContentValues cv = new ContentValues();
+		cv.put(User_FullName, user.getFullName());
+		cv.put(User_Password, user.getPassword());
+		//long i = ourDatabase.update(Table_User, cv, User_Email+"='"+user.getEmail()+"'", null);
+		long i = ourDatabase.update(Table_User, cv, User_Email+User_Email+"='"+user.getEmail()+"'", null);
+		
+		if(i>0)
+			return user;
+		else
+			return null;
+	}
+	
+	//THIS METHOS IS USED TO DELETE USER FROM THE DATABASE
+	public boolean DeleteUser(String email){
+       
+		return ourDatabase.delete(Table_User, User_Email+"="+email, null)>0;
+	}
+	
+	
+	//************************************END OF USER SECTION*************************************************//
+	
+	
+}

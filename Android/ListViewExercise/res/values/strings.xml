@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">ListViewExercise</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">List view Exercise</string>
+    <string name="prompt">Item</string>
+    <string name="qty">Quantity</string>
+    <string name="enter">Add</string>
+    <string name="search">Search...</string>
+</resources>

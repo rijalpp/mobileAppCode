@@ -1,0 +1,893 @@
+package com.example.expensediary;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.R.bool;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.DateFormat;
+import android.util.Log;
+
+public class DataAccessManager {
+
+	// ******************************REGION DATABASE AND TABLE
+	// DECLARATION********************************************//
+	// DATABASE DETAILS
+	private static final String Database_ExpenseDiaryDB = "ExpenseDiaryDB";
+	private static final int Database_Version = 1;
+
+	// USERS TABLE DETAILS
+	private static final String Table_User = "Users";
+	private static final String User_ID = "UserID";
+	public static final String User_Email = "Email";
+	public static final String User_FullName = "FullName";
+	public static final String User_Password = "Password";
+	public static final String User_RecordMode = "RecordMode";
+
+	private static final String create_Table_User = "CREATE TABLE "
+			+ Table_User + " (" + User_ID
+			+ " INTEGER PRIMARY KEY AUTOINCREMENT," + User_Email
+			+ " TEXT NOT NULL, " + User_FullName + " TEXT NOT NULL, "
+			+ User_Password + " TEXT NOT NULL, " + User_RecordMode
+			+ " TEXT NOT NULL);";
+	// CATEGORIES TABLE DETAILS
+	private static final String Table_Category = "Categories";
+	public static final String Category_CategoryID = "CategoryID";
+	public static final String Category_Name = "Name";
+	public static final String Category_Description = "Description";
+	public static final String Category_UserID = "UserID";
+	public static final String Category_RecordMode = "RecordMode";
+
+	private static final String create_Table_Category = "CREATE TABLE "
+			+ Table_Category + " (" + Category_CategoryID
+			+ " INTEGER PRIMARY KEY AUTOINCREMENT," + Category_Name
+			+ " TEXT NOT NULL, " + Category_Description + " TEXT NULL, "
+			+ Category_UserID + " INTEGER NOT NULL, " + Category_RecordMode
+			+ " TEXT NOT NULL);";
+
+	// GOALS TABLE DETAILS
+	private static final String Table_Goal = "Goals";
+	public static final String Goal_ID = "GoalID";
+	public static final String Goal_Month = "Month";
+	public static final String Goal_Year = "Year";
+	public static final String Goal_TargetExpense = "TargetExpense";
+	public static final String Goal_Note = "Note";
+	public static final String Goal_UserID = "UserID";
+	public static final String Goal_RecordMode = "RecordMode";
+
+	public static final String create_Table_Goal = "CREATE TABLE " + Table_Goal
+			+ " (" +Goal_ID+" INTEGER PRIMARY KEY AUTOINCREMENT," + Goal_Month + " TEXT NOT NULL, " + Goal_Year
+			+ " TEXT NOT NULL, " + Goal_TargetExpense + " REAL NOT NULL, "
+			+ Goal_Note + " TEXT NULL, " + Goal_UserID + " TEXT NOT NULL, "
+			+ Goal_RecordMode + " TEXT NOT NULL);";
+
+	// EXPENSES TABLE DETAILS
+	private static final String Table_Expense = "Expenses";
+	public static final String Expense_ExpenseID = "ExpenseID";
+	public static final String Expense_Amount = "Amount";
+	public static final String Expense_ExpenseDate = "ExpenseDate";
+	public static final String Expense_Description = "Description";
+	public static final String Expense_CategoryID = "CategoryID";
+	public static final String Expense_RecordMode = "RecordMode";
+	public static final String Expense_UserID = "UserID";
+
+	public static final String create_Table_Expense = "CREATE TABLE "
+			+ Table_Expense + " (" + Expense_ExpenseID
+			+ " INTEGER PRIMARY KEY AUTOINCREMENT, " + Expense_Amount
+			+ " REAL NOT NULL, " + Expense_ExpenseDate + " TEXT NOT NULL, "
+			+Expense_Description+" TEXT NULL,"
+			+ Expense_CategoryID + " INTEGER NOT NULL," + Expense_RecordMode
+			+ " TEXT NOT NULL,"+Expense_UserID+" INTEGER NOT NULL);";
+
+	// **************************************END OF DATABASE AND TABLE
+	// DECLARATION REGION*************************************//
+
+	// **************************************REGION DATABASE AND TABLE CREATION
+	// AND DATABASE RELATED CLASS AND METHODS*********//
+	// CREATING SQLITE RELATED CLASS VARIABLES
+	private DBHelper ourHelper;
+	private final Context ourContext;
+	private SQLiteDatabase ourDatabase;
+
+	// CREATING NEW SUB CLASS
+	private static class DBHelper extends SQLiteOpenHelper {
+
+		public DBHelper(Context context) {
+			super(context, Database_ExpenseDiaryDB, null, Database_Version);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			
+			// TODO Auto-generated method stub
+			db.execSQL(create_Table_User);
+			db.execSQL(create_Table_Category);
+			db.execSQL(create_Table_Goal);
+			db.execSQL(create_Table_Expense);
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			// TODO Auto-generated method stub
+			db.execSQL("DROP TABLE IF EXISTS " + Table_User);
+			db.execSQL("DROP TABLE IF EXISTS " + Table_Category);
+			db.execSQL("DROP TABLE IF EXISTS " + Table_Goal);
+			db.execSQL("DROP TABLE IF EXISTS " + Table_Expense);
+			onCreate(db);
+		}
+
+	}// SUB CLASS DB HELPER ENDS HERE.
+
+	// CONSTRUCTOR
+	public DataAccessManager(Context c) {
+		this.ourContext = c;
+	}
+
+	// USED TO OPEN THE DATABASE FOR INSERTING THE DATA
+	public DataAccessManager OpenForInsertion() throws SQLiteException {
+		ourHelper = new DBHelper(ourContext);
+		ourDatabase = ourHelper.getWritableDatabase();
+		return this;
+	}
+
+	// USED TO OPEN THE DATABASE FOR RETRIEVING THE DATA.
+	public DataAccessManager OpenForRetrieval() throws SQLiteException {
+		ourHelper = new DBHelper(ourContext);
+		ourDatabase = ourHelper.getReadableDatabase();
+		return this;
+	}
+
+	// USED TO CLOSE THE DATABASE
+	public void Close() {
+		ourHelper.close();
+	}
+
+	// ***********************END OF REGION DATABASE AND TABLE CREATION,
+	// DATABASE RELATED CLASS AND METHODS**********//
+
+	// ***********************************REGION OF
+	// USER****************************************//
+
+	// THE FOLLOWING ARRAY IS DEFINED TO RETRIEVE THE RECORDS OF THE COLUMNS IN
+	// THE ARRAY WHICH IS PASSED TO QUERY.
+	private String[] columnsUser = { User_ID, User_Email, User_FullName, User_Password,
+			User_RecordMode };
+
+	// THE METHOD BELOW IS CALLED TO CONVERT EACH RECORD OF CURSOR TO USER
+	// OBJECT.
+	private User CursorToUser(Cursor cursor) {
+
+		User user = new User();
+        
+		int userIDIndex = cursor.getColumnIndex(User_ID);
+		int userEmailIndex = cursor.getColumnIndex(User_Email);
+		int userFullNameIndex = cursor.getColumnIndex(User_FullName);
+		int userPasswordIndex = cursor.getColumnIndex(User_Password);
+		int userRecordModeIndex = cursor.getColumnIndex(User_RecordMode);
+		
+		user.setUserID(cursor.getInt(userIDIndex));
+
+		user.setEmail(cursor.getString(userEmailIndex)); // RETRIEVING EMAIL
+															// WHOSE INDEX IN
+															// DATABASE IS 0
+		Log.v("Email Address testing: ", user.getEmail());
+		user.setFullName(cursor.getString(userFullNameIndex)); // RETRIEVING
+																// FULLNAME
+																// WHOSE INDEX
+																// IN TABLE IS
+		user.setPassword(cursor.getString(userPasswordIndex)); // RETRIEVING
+																// PASSWORD
+																// WHOSE INDEX
+																// IN TABLE IS 2
+		user.setRecordMode(cursor.getString(userRecordModeIndex)); // RETRIEVING
+																	// RECORDMODE
+																	// WHOSE
+																	// INDEX IN
+																	// TABLE IS
+																	// 3.
+
+		return user;
+	}
+
+	// THE METHOD BELOW IS USED TO GET USER DETAILS BY EMAIL
+	public User GetUserDetails(String email) {
+
+		try {
+			User user = new User();
+			// QUERY THE DATABASE
+			Cursor cursor = ourDatabase.query(Table_User, columnsUser,
+					User_Email + "=" + email, null, null, null, null);
+			if (cursor != null) {
+				// MOVE THE CURSOR TO THE FIRST ROW OF THE ROWS RETURNED BY THE
+				// QUERY
+				cursor.moveToFirst();
+				// CONVERT THE CURSOR TO USER OBJECT.
+				user = CursorToUser(cursor);
+			}
+			cursor.close();
+			// RETURN THE USER OBJECT
+			return user;
+		} catch (CursorIndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.v("Exception occured just above", "check above line.");
+		}
+
+		return null;
+	}
+
+	// THIS METHOD IS USED WHEN USER LOGS IN USING EMAIL AND PASSWORD.
+	public User GetUserDetails(String email, String password) {
+
+		try {
+			User user = new User();
+			// QUERY THE DATABASE
+			Cursor cursor = ourDatabase.query(Table_User, columnsUser,
+					User_Email + "=?", new String[] { email }, null, null,
+					null, null);
+			// if(cursor!= null)
+			// {
+			// MOVE THE CURSOR TO THE FIRST ROW OF THE ROWS RETURNED BY THE
+			// QUERY
+			cursor.moveToFirst();
+			// CONVERT THE CURSOR TO USER OBJECT.
+			user = CursorToUser(cursor);
+			// }
+			cursor.close();
+			if (user != null) {
+				if (user.getPassword().equals(password))
+					// RETURN THE USER OBJECT
+					return user;
+				else
+					return null;
+			} else
+				return null;
+		} catch (CursorIndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.v("Index out of bound Exception occured just above",
+					"check above lines.");
+		}
+
+		return null;
+
+	}
+
+	// THIS METHOD IS USED TO RETRIEVE ALL THE USERS.
+	public List<User> GetUsers() {
+
+		List<User> userList = new ArrayList<User>();
+
+		Cursor cursor = ourDatabase.query(Table_User, columnsUser, null, null,
+				null, null, null);
+
+		cursor.moveToFirst();
+
+		while (!cursor.isAfterLast()) {
+
+			User user = CursorToUser(cursor);
+
+			userList.add(user);
+
+			cursor.moveToNext();
+
+		}
+
+		cursor.close();
+
+		return userList;
+	}
+
+	// RETRIEVES THE USERS BASED ON RECORD MODE.
+	public List<User> GetUsers(String recordMode) {
+
+		List<User> userList = new ArrayList<User>();
+
+		Cursor cursor = ourDatabase.query(Table_User, columnsUser,
+				User_RecordMode + "=" + recordMode, null, null, null, null);
+
+		cursor.moveToFirst();
+
+		while (!cursor.isAfterLast()) {
+
+			User user = CursorToUser(cursor);
+
+			userList.add(user);
+
+			cursor.moveToNext();
+
+		}
+
+		cursor.close();
+
+		return userList;
+
+	}
+
+	// THIS METHOD IS USED TO CREATE USER IN THE DATABASE
+	public User CreateUser(User user) {
+
+		ContentValues cv = new ContentValues();
+		cv.put(User_Email, user.getEmail());
+		cv.put(User_FullName, user.getFullName());
+		cv.put(User_Password, user.getPassword());
+		cv.put(User_RecordMode, user.getRecordMode());
+		long i = ourDatabase.insert(Table_User, null, cv);
+		//GET USER DETAILS FROM THE DATABASE
+		Cursor cursor = ourDatabase.query(Table_User,
+				columnsUser, User_ID + " = " + i, null,
+				null, null, null);
+		
+		cursor.moveToFirst();
+		
+		user = CursorToUser(cursor);
+		
+		Log.v("New UserID:  ", user.getUserID().toString());
+		
+		if (i > 0)
+			return user;
+		else
+			return null;
+	}
+
+	// THIS METHOD IS USED TO UPDATE USER IN THE DATABASE
+	public User UpdateUser(User user) {
+		ContentValues cv = new ContentValues();
+		cv.put(User_FullName, user.getFullName());
+		cv.put(User_Password, user.getPassword());
+		// long i = ourDatabase.update(Table_User, cv,
+		// User_Email+"='"+user.getEmail()+"'", null);
+		long i = ourDatabase.update(Table_User, cv, User_Email + User_Email
+				+ "='" + user.getEmail() + "'", null);
+
+		if (i > 0)
+			return user;
+		else
+			return null;
+	}
+
+	// THIS METHOS IS USED TO DELETE USER FROM THE DATABASE
+	public boolean DeleteUser(String email) {
+
+		return ourDatabase.delete(Table_User, User_Email + "=" + email, null) > 0;
+	}
+
+	// ************************************END OF USER
+	// SECTION*************************************************//
+
+	// ***********************************REGION OF
+	// CATEGORY****************************************//
+
+	// THE FOLLOWING ARRAY IS DEFINED TO RETRIEVE THE RECORDS OF THE COLUMNS IN
+	// THE ARRAY WHICH IS PASSED TO QUERY.
+	private String[] columnsCategory = { Category_CategoryID, Category_Name,
+			Category_Description, Category_UserID, Category_RecordMode };
+
+	// THE METHOD BELOW IS CALLED TO CONVERT EACH RECORD OF CURSOR TO CATEGORY
+	// OBJECT.
+	private Category CursorToCategory(Cursor cursor) {
+
+		Category category = new Category();
+
+		int categoryIDIndex = cursor.getColumnIndex(Category_CategoryID);
+		int categoryNameIndex = cursor.getColumnIndex(Category_Name);
+		int categoryDescriptionIndex = cursor
+				.getColumnIndex(Category_Description);
+		int categoryEmailIndex = cursor.getColumnIndex(Category_UserID);
+
+		category.setCategoryID(cursor.getInt(categoryIDIndex));
+		category.setName(cursor.getString(categoryNameIndex));
+		category.setDescription(cursor.getString(categoryDescriptionIndex));
+		category.setUserDetails(GetUserDetails(cursor
+				.getString(categoryEmailIndex)));
+
+		return category;
+	}
+
+	// THE METHOD BELOW IS USED TO GET CATEGORY DETAILS BY CATEGORYID
+	public Category SelectCategoryByID(String categoryID) {
+
+		try {
+			Category category = new Category();
+			// QUERY THE DATABASE
+			Cursor cursor = ourDatabase.query(Table_Category, columnsCategory,
+					Category_CategoryID + "=?", new String[] { categoryID },
+					null, null, null, null);
+			if (cursor != null) {
+				// MOVE THE CURSOR TO THE FIRST ROW OF THE ROWS RETURNED BY THE
+				// QUERY
+				cursor.moveToFirst();
+				// CONVERT THE CURSOR TO CATEGORY OBJECT.
+				category = CursorToCategory(cursor);
+			}
+			cursor.close();
+			// RETURN THE CATEGORY OBJECT
+			return category;
+		} catch (CursorIndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.v("Exception occured just above", "check above line.");
+		}
+
+		return null;
+	}
+
+	// RETRIEVES THE CATEGORIES BY MATCHING NAMES.
+	public List<Category> SelectCategoriesByName(String userID,
+			String categoryName) {
+
+		List<Category> categoryList = new ArrayList<Category>();
+
+		Cursor cursor = ourDatabase.query(Table_Category, columnsCategory,
+				Category_UserID + "=?" + " and " + Category_Name + "=?",
+				new String[] { userID, categoryName }, null, null, null, null);
+
+		cursor.moveToFirst();
+
+		while (!cursor.isAfterLast()) {
+
+			Category category = CursorToCategory(cursor);
+
+			categoryList.add(category);
+
+			cursor.moveToNext();
+
+		}
+
+		cursor.close();
+
+		return categoryList;
+
+	}
+
+	// RETRIEVES THE CATEGORIES BY MATCHING USER IDENTIFIED BY EMAIL.
+	public List<Category> SelectCategoriesByUser(String userID) {
+
+		List<Category> categoryList = new ArrayList<Category>();
+
+		Cursor cursor = ourDatabase.query(Table_Category, columnsCategory,
+				Category_UserID + "=?", new String[] { userID }, null, null,
+				null, null);
+
+		cursor.moveToFirst();
+
+		while (!cursor.isAfterLast()) {
+
+			Category category = CursorToCategory(cursor);
+
+			categoryList.add(category);
+
+			cursor.moveToNext();
+		}
+
+		cursor.close();
+
+		return categoryList;
+
+	}
+
+	// THIS METHOD IS USED TO CREATE CATEGORY IN THE DATABASE
+	public Category AddCategory(Category category) {
+
+		ContentValues cv = new ContentValues();
+		cv.put(Category_Name, category.getName());
+		cv.put(Category_Description, category.getDescription());
+		cv.put(Category_UserID, category.getUserDetails().getUserID());
+		cv.put(User_RecordMode, category.getRecordMode());
+		long i = ourDatabase.insert(Table_Category, null, cv);
+		
+		Cursor cursor = ourDatabase.query(Table_Category, columnsCategory, Category_CategoryID+"="+i, null, null, null, null);
+		cursor.moveToFirst();
+		 category = CursorToCategory(cursor);
+		 cursor.close();
+		 Log.v("Category created: "," The Category ID is: "+category.getCategoryID());
+		if (i > 0)
+			return category;
+		else
+			return null;
+	}
+
+	// THIS METHOD IS USED TO UPDATE CATEGORY IN THE DATABASE
+	public Category UpdateCategory(Category category, String userID) {
+		ContentValues cv = new ContentValues();
+		cv.put(Category_Name, category.getName());
+		cv.put(Category_Description, category.getDescription());
+		// long i = ourDatabase.update(Table_User, cv,
+		// User_Email+"='"+user.getEmail()+"'", null);
+		long i = ourDatabase.update(Table_Category, cv,
+				Category_UserID + "=" + userID + " and " + Category_CategoryID
+						+ "=" + category.getCategoryID(), null);
+
+		if (i > 0)
+			return category;
+		else
+			return null;
+	}
+
+	// THIS METHOS IS USED TO DELETE CATEGORY FROM THE DATABASE
+	public boolean DeleteCategory(String userID, String categoryID) {
+
+		return ourDatabase.delete(Table_Category, Category_UserID + "=" + userID
+				+ " and " + Category_CategoryID + "=" + categoryID, null) > 0;
+	}
+
+	// ************************************END OF CATEGORY
+	// SECTION*************************************************//
+
+	// ***********************************REGION OF
+	// GOAL****************************************//
+
+	// THE FOLLOWING ARRAY IS DEFINED TO RETRIEVE THE RECORDS OF THE COLUMNS IN
+	// THE ARRAY WHICH IS PASSED TO QUERY.
+	private String[] columnsGoal = { Goal_Month, Goal_Year, Goal_TargetExpense,
+			Goal_Note, Goal_UserID, Goal_RecordMode };
+
+	// THE METHOD BELOW IS CALLED TO CONVERT EACH RECORD OF CURSOR TO GOAL
+	// OBJECT.
+	private Goal CursorToGoal(Cursor cursor) {
+
+		Goal goal = new Goal();
+
+		int goalMonthIndex = cursor.getColumnIndex(Goal_Month);
+		int goalYearIndex = cursor.getColumnIndex(Goal_Year);
+		int goalTargetExpenseIndex = cursor.getColumnIndex(Goal_TargetExpense);
+		int goalNoteIndex = cursor.getColumnIndex(Goal_Note);
+		int goalUserIDIndex = cursor.getColumnIndex(Goal_UserID);
+		int goalRecordModeIndex = cursor.getColumnIndex(Goal_RecordMode);
+
+		goal.setMonth(cursor.getString(goalMonthIndex));
+		goal.setYear(cursor.getString(goalYearIndex));
+		goal.setTargetExpense(cursor.getDouble(goalTargetExpenseIndex));
+		goal.setUserDetails(GetUserDetails(cursor.getString(goalUserIDIndex)));
+		goal.setRecordMode(cursor.getString(goalRecordModeIndex));
+
+		return goal;
+	}
+
+	// THE METHOD BELOW IS USED TO GET GOAL DETAILS BY MONTH, YEAR AND USER
+	public Goal SelectGoal(String month, String year, String email) {
+
+		try {
+			Goal goal = new Goal();
+			// QUERY THE DATABASE
+			Cursor cursor = ourDatabase.query(Table_Goal, columnsGoal,
+					Goal_Month + "=?" + " and" + Goal_Year + "?" + " and "
+							+ Goal_UserID + "?", new String[] { month, year,
+							email }, null, null, null, null);
+			if (cursor != null) {
+				// MOVE THE CURSOR TO THE FIRST ROW OF THE ROWS RETURNED BY THE
+				// QUERY
+				cursor.moveToFirst();
+				// CONVERT THE CURSOR TO GOAL OBJECT.
+				goal = CursorToGoal(cursor);
+			}
+			cursor.close();
+			// RETURN THE GOAL OBJECT
+			return goal;
+		} catch (CursorIndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.v("Exception occured just above", "check above line.");
+		}
+
+		return null;
+	}
+
+	// RETRIEVES THE GOALS BY DATE RANGE .
+	public List<Goal> SelectGoalsByDateRange(String startMonth,
+			String endMonth, String year, String email) {
+
+		List<Goal> goalList = new ArrayList<Goal>();
+
+		/*
+		 * Cursor cursor = ourDatabase.query(Table_Goal, columnsGoal,
+		 * Category_Email + "=?" + " and "+Category_Name+ "=?", new String[]
+		 * {email, categoryName}, null, null, null, null);
+		 * 
+		 * cursor.moveToFirst();
+		 * 
+		 * while(!cursor.isAfterLast()){
+		 * 
+		 * Goal goal = CursorToGoal(cursor);
+		 * 
+		 * goalList.add(goal);
+		 * 
+		 * cursor.moveToNext();
+		 * 
+		 * }
+		 * 
+		 * cursor.close();
+		 */
+
+		return goalList;
+
+	}
+	
+	public List<Goal> SelectGoalsByUser( String userID) {
+
+		List<Goal> goalList = new ArrayList<Goal>();
+
+		
+		  Cursor cursor = ourDatabase.query(Table_Goal, columnsGoal,
+		  Category_UserID + "=?", new String[]
+		  {userID}, null, null, null, null);
+		  
+		  cursor.moveToFirst();
+		  
+		  while(!cursor.isAfterLast()){
+		  
+		  Goal goal = CursorToGoal(cursor);
+		  
+		  goalList.add(goal);
+		  
+		  cursor.moveToNext();
+		  
+		  }
+		  
+		  cursor.close();
+
+		return goalList;
+
+	}
+
+	// THIS METHOD IS USED TO CREATE GOAL IN THE DATABASE
+	public Goal AddGoal(Goal goal) {
+
+		ContentValues cv = new ContentValues();
+		cv.put(Goal_Month, goal.getMonth());
+		cv.put(Goal_Year, goal.getYear());
+		cv.put(Goal_TargetExpense, goal.getTargetExpense());
+		cv.put(Goal_Note, goal.getNote());
+		cv.put(Goal_UserID, goal.getUserDetails().getUserID());
+		cv.put(Goal_RecordMode, goal.getRecordMode());
+		long i = ourDatabase.insert(Table_Goal, null, cv);
+		if (i > 0)
+			return goal;
+		else
+			return null;
+	}
+
+	// THIS METHOD IS USED TO UPDATE GOAL IN THE DATABASE
+	public Goal UpdateGoal(Goal goal, String userID) {
+		ContentValues cv = new ContentValues();
+		cv.put(Goal_TargetExpense, goal.getTargetExpense());
+		cv.put(Goal_Note, goal.getNote());
+		cv.put(Goal_RecordMode, goal.getRecordMode());
+
+		long i = ourDatabase.update(Table_Goal, cv,
+				Goal_Month + "=" + goal.getMonth() + " and " + Goal_Year + "="
+						+ goal.getYear() + " and " + Goal_UserID + "=" + userID,
+				null);
+
+		if (i > 0)
+			return goal;
+		else
+			return null;
+	}
+
+	// THIS METHOS IS USED TO DELETE GOAL FROM THE DATABASE
+	public boolean DeleteGoal(String month, String year, String userID) {
+
+		return ourDatabase.delete(Table_Goal, Goal_Month + "=" + month
+				+ " and " + Goal_Year + "=" + year + " and " + Goal_UserID + "="
+				+ userID, null) > 0;
+	}
+
+	// ************************************END OF GOAL
+	// SECTION*************************************************//
+
+	// ***********************************REGION OF
+	// EXPENSE****************************************//
+
+	// THE FOLLOWING ARRAY IS DEFINED TO RETRIEVE THE RECORDS OF THE COLUMNS IN
+	// THE ARRAY WHICH IS PASSED TO QUERY.
+	private String[] columnsExpense = { Expense_ExpenseID, Expense_Amount,
+			Expense_ExpenseDate, Expense_Description, Expense_CategoryID,
+			Expense_RecordMode, Expense_UserID };
+
+	// THE METHOD BELOW IS CALLED TO CONVERT EACH RECORD OF CURSOR TO EXPENSE
+	// OBJECT.
+	private Expense CursorToExpense(Cursor cursor) {
+
+		Expense expense = new Expense();
+
+		int expenseExpenseIdIndex = cursor.getColumnIndex(Expense_ExpenseID);
+		int expenseAmountIndex = cursor.getColumnIndex(Expense_Amount);
+		int expenseExpenseDateIndex = cursor
+				.getColumnIndex(Expense_ExpenseDate);
+		int expenseDescriptionIndex = cursor
+				.getColumnIndex(Expense_Description);
+		int expenseCategoryIDIndex = cursor.getColumnIndex(Expense_CategoryID);
+		int expenseRecordModeIndex = cursor.getColumnIndex(Expense_RecordMode);
+		int expenseUserIDIndex = cursor.getColumnIndex(Expense_UserID);
+
+		expense.setExpenseID(cursor.getInt(expenseExpenseIdIndex));
+		expense.setAmount(cursor.getDouble(expenseAmountIndex));
+		// DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		String strExpenseDate = cursor.getString(expenseExpenseDateIndex);
+		expense.setExpenseDate(cursor.getString(expenseExpenseDateIndex));
+		expense.setDescription(cursor.getString(expenseDescriptionIndex));
+		expense.setExpenseCategory(SelectCategoryByID(cursor
+				.getString(expenseCategoryIDIndex)));
+		expense.setRecordMode(cursor.getString(expenseRecordModeIndex));
+
+		return expense;
+	}
+
+	// THE METHOD BELOW IS USED TO GET EXPENSE DETAILS BY EXPENSEID
+	public Expense SelectExpense(String expenseID) {
+
+		try {
+			Expense expense = new Expense();
+			// QUERY THE DATABASE
+			Cursor cursor = ourDatabase.query(Table_Expense, columnsExpense,
+					Expense_ExpenseID + "?", new String[] { expenseID }, null,
+					null, null, null);
+			if (cursor != null) {
+				// MOVE THE CURSOR TO THE FIRST ROW OF THE ROWS RETURNED BY THE
+				// QUERY
+				cursor.moveToFirst();
+				// CONVERT THE CURSOR TO EXPENSE OBJECT.
+				expense = CursorToExpense(cursor);
+			}
+			cursor.close();
+			// RETURN THE EXPENSE OBJECT
+			return expense;
+		} catch (CursorIndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.v("Exception occured in expense cursor", "check above line.");
+		}
+
+		return null;
+	}
+
+	// RETRIEVES THE EXPENSE BY DATE RANGE .
+	public List<Expense> SearchExpenseByDate(String categoryID,
+			String expenseDate) {
+
+		List<Expense> expenseList = new ArrayList<Expense>();
+
+		/*
+		 * Cursor cursor = ourDatabase.query(Table_Expense, columnsExpense,
+		 * Category_Email + "=?" + " and "+Category_Name+ "=?", new String[]
+		 * {email, categoryName}, null, null, null, null);
+		 * 
+		 * cursor.moveToFirst();
+		 * 
+		 * while(!cursor.isAfterLast()){
+		 * 
+		 * Expense expense = CursorToExpense(cursor);
+		 * 
+		 * goalList.add(goal);
+		 * 
+		 * cursor.moveToNext();
+		 * 
+		 * }
+		 * 
+		 * cursor.close();
+		 */
+
+		return expenseList;
+
+	}
+
+	// RETRIEVES THE EXPENSE BY DATE RANGE .
+	public List<Expense> SearchExpensesByDateRange(String startDate,
+			String endDate, String userID) {
+
+		List<Expense> expenseList = new ArrayList<Expense>();
+
+		/*
+		 * Cursor cursor = ourDatabase.query(Table_Goal, columnsGoal,
+		 * Category_Email + "=?" + " and "+Category_Name+ "=?", new String[]
+		 * {email, categoryName}, null, null, null, null);
+		 * 
+		 * cursor.moveToFirst();
+		 * 
+		 * while(!cursor.isAfterLast()){
+		 * 
+		 * Goal goal = CursorToGoal(cursor);
+		 * 
+		 * goalList.add(goal);
+		 * 
+		 * cursor.moveToNext();
+		 * 
+		 * }
+		 * 
+		 * cursor.close();
+		 */
+
+		return expenseList;
+
+	}
+
+	// RETRIEVES THE EXPENSE BY CATEGORY.
+	public List<Expense> SearchExpensesByCategory(String categoryID) {
+
+		List<Expense> expenseList = new ArrayList<Expense>();
+
+		Cursor cursor = ourDatabase.query(Table_Expense, columnsExpense,
+				Expense_CategoryID + "=?", new String[] { categoryID }, null,
+				null, null, null);
+
+		cursor.moveToFirst();
+
+		while (!cursor.isAfterLast()) {
+
+			Expense expense = CursorToExpense(cursor);
+
+			expenseList.add(expense);
+
+			cursor.moveToNext();
+
+		}
+
+		cursor.close();
+
+		return expenseList;
+
+	}
+
+	// THIS METHOD IS USED TO CREATE EXPENSE IN THE DATABASE
+	public Expense AddExpense(Expense expense) {
+
+		ContentValues cv = new ContentValues();
+		cv.put(Expense_Amount, expense.getAmount());
+		cv.put(Expense_ExpenseDate, expense.getExpenseDate().toString());
+		cv.put(Expense_Description, expense.getDescription());
+		cv.put(Expense_CategoryID, expense.getExpenseCategory().getCategoryID());
+		cv.put(Expense_RecordMode, expense.getRecordMode());
+		cv.put(Expense_UserID, expense.getUserID());
+		long i = ourDatabase.insert(Table_Expense, null, cv);
+		
+		Cursor cursor = ourDatabase.query(Table_Expense, columnsExpense, Expense_ExpenseID+"="+i, null, null, null, null);
+		cursor.moveToFirst();
+		 expense = CursorToExpense(cursor);
+		 cursor.close();
+		 Log.v("Expense created: "," The Expense ID is: "+expense.getExpenseID());
+		
+		if (i > 0)
+			return expense;
+		else
+			return null;
+	}
+
+	// THIS METHOD IS USED TO UPDATE EXPENSE IN THE DATABASE
+	public Expense UpdateExpense(Expense expense, String email) {
+		ContentValues cv = new ContentValues();
+		cv.put(Expense_Amount, expense.getAmount());
+		// cv.put(Expense_ExpenseDate, expense.getExpenseDate());
+		cv.put(Expense_Description, expense.getDescription());
+		cv.put(Expense_CategoryID, expense.getExpenseCategory().getCategoryID());
+		cv.put(Expense_RecordMode, expense.getRecordMode());
+
+		long i = ourDatabase.update(Table_Expense, cv, Goal_Month + "="
+				+ expense.getExpenseID(), null);
+
+		if (i > 0)
+			return expense;
+		else
+			return null;
+	}
+
+	// THIS METHOS IS USED TO DELETE EXPENSE FROM THE DATABASE
+	public boolean DeleteExpense(String expenseID) {
+
+		return ourDatabase.delete(Table_Expense, Expense_ExpenseID + "="
+				+ expenseID, null) > 0;
+	}
+
+	// ************************************END OF EXPENSE
+	// SECTION*************************************************//
+
+}

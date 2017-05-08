@@ -1,0 +1,95 @@
+package com.example.expensediary;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class ActivityCategory extends Activity implements OnClickListener {
+
+	HelperSessionManagement session;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_category);
+		session = new HelperSessionManagement(this);
+		
+		if(session.isLoggedIn()){
+		//GETTING CONTROL DETAILS FROM LAYOUT
+	    TextView tvWelcomeName = (TextView)findViewById(R.id.tvWelcomeName);
+	    tvWelcomeName.setText("Welcome "+ session.getUserDetails().getFullName());
+	    ImageView btnDashBoard = (ImageView) findViewById(R.id.btnDashBoard);
+		Button btnLogOut = (Button) findViewById(R.id.btnLogOut);
+		Button btnAddCategory = (Button)findViewById(R.id.btnAddCategory);
+		Button btnCancel = (Button)findViewById(R.id.btnCancel);
+		Button btnView = (Button)findViewById(R.id.btnView);
+		
+		//SETTING ON CLICK LISTENER
+		btnDashBoard.setOnClickListener(this);
+		btnAddCategory.setOnClickListener(this);
+		btnCancel.setOnClickListener(this);
+		btnView.setOnClickListener(this);
+		btnLogOut.setOnClickListener(this);
+		}
+		
+		//GO TO THE LOGIN PAGE
+		else{
+			session.logoutUser(); 
+		}
+		
+	}
+	
+	public void onClick(View v) {
+		String newIntent = "com.example.expensediary.ACTIVITYVIEWCATEGORY";
+		switch(v.getId())
+		{
+		case R.id.btnDashBoard:
+			newIntent = "com.example.expensediary.ACTIVITYDASHBOARD";
+			break;
+		case R.id.btnAddCategory:
+			//TODO add category 
+			AddCategory();
+			break;
+		case R.id.btnCancel:
+			newIntent = "com.example.expensediary.ACTIVITYDASHBOARD";
+			break;
+		case R.id.btnView:
+			newIntent ="com.example.expensediary.ACTIVITYVIEWCATEGORY";
+			break;
+		case R.id.btnLogOut:
+			session.clearUserSession();
+			newIntent ="com.example.expensediary.LOGIN";
+		}
+		
+		Intent intent = new Intent(newIntent);
+		startActivity(intent);
+	}
+	
+	public Category AddCategory(){
+		
+		EditText edtCategory = (EditText)findViewById(R.id.edtCategory);
+		EditText edtDescription = (EditText)findViewById(R.id.edtDescription);
+		
+		Category category = new Category();
+		category.setUserDetails(session.getUserDetails());
+		category.setName(edtCategory.getText().toString());
+		category.setDescription(edtDescription.getText().toString());
+		category.setRecordMode( session.getUserRecordMode());
+		
+		DataAccessManager manager = new DataAccessManager(ActivityCategory.this);
+		manager.OpenForInsertion();
+		category = manager.AddCategory(category);
+		manager.Close();
+		
+		return category;
+	}
+
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyFirstBackground" >
+
+    <TextView
+        android:id="@+id/tvWelcomeName"
+        style="@style/MyCaption"
+        android:layout_marginLeft="200dp"
+        android:text="Welcome Name"
+        android:textSize="12dp" />
+
+    <TextView
+        android:id="@+id/amount"
+        style="@style/MyCaption"
+        android:layout_marginTop="50dp"
+        android:text="Budget Amount (Monthly):" />
+
+    <EditText
+        android:id="@+id/amountText"
+        style="@style/MyTextBox" />
+
+    <TextView
+        android:id="@+id/note"
+        style="@style/MyCaption"
+        android:text="Note:" />
+
+    <EditText
+        android:id="@+id/noteText"
+        style="@style/MyTextBox"
+        android:layout_height="70dp" />
+
+    <LinearLayout style="@style/MySecondBackground" >
+
+        <Button
+            android:id="@+id/btnSetBudget"
+            style="@style/MyActionButton"
+            android:layout_marginLeft="35dp"
+            android:text="Save" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MyCancelButton"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>

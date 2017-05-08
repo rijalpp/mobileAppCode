@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyFirstBackground" >
+
+    <TextView
+        android:id="@+id/tvWelcomeName"
+        style="@style/MyCaption"
+        android:layout_marginLeft="200dp"
+        android:text="Welcome Name"
+        android:textSize="12dp" />
+
+    <Spinner
+        android:id="@+id/spnCategories"
+        style="@style/MyTextBox"
+        android:hint="Select Category" ></Spinner>
+
+    <EditText
+        android:id="@+id/edtByCategory"
+        style="@style/MyTextBox" />
+
+    <TextView
+        android:id="@+id/tvdateFrom"
+        style="@style/MyCaption"
+        android:text="By Date Range:" />
+
+    <EditText
+        android:id="@+id/edtDateFrom"
+        style="@style/MyTextBox"
+        android:hint="From Date"
+        android:inputType="date" />
+
+
+
+    <EditText
+        android:id="@+id/edtDateTo"
+        style="@style/MyTextBox"
+        android:hint="To Date"
+        android:inputType="date" />
+
+    <RadioButton
+        android:id="@+id/rbtnMonth"
+        style="@style/MyRadioButton"
+        android:text="Current Month Only"
+        android:textColor="#505257"
+        android:typeface="monospace" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp" >
+
+        <Button
+            android:id="@+id/btnView"
+            style="@style/MyActionButton"
+            android:layout_marginLeft="40dp"
+            android:text="View" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MyCancelButton"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>

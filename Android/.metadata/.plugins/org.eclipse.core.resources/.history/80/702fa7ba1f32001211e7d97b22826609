@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyFirstBackground" >
+
+    <TextView
+        android:id="@+id/tvWelcomeName"
+        style="@style/MyCaption"
+        android:layout_marginLeft="200dp"
+        android:text="Welcome Name"
+        android:textSize="12dp" />
+
+    <TextView
+        android:id="@+id/amount"
+        style="@style/MyCaption"
+        android:layout_marginTop="50dp"
+        android:text="Budget Amount (Monthly):" />
+
+    <EditText
+        android:id="@+id/edtAmount"
+        style="@style/MyTextBox" />
+
+    <TextView
+        android:id="@+id/note"
+        style="@style/MyCaption"
+        android:text="Note:" />
+
+    <EditText
+        android:id="@+id/edtNote"
+        style="@style/MyTextBox"
+        android:layout_height="60dp" />
+    <TextView
+        android:id="@+id/tvMonth"
+        style="@style/MyCaption"
+        android:text="Month:" />
+
+    <EditText
+        android:id="@+id/edtMonth"
+        style="@style/MyTextBox" />
+    <TextView
+        android:id="@+id/tvYear"
+        style="@style/MyCaption"
+        android:text="Year:" />
+
+    <EditText
+        android:id="@+id/edtYear"
+        style="@style/MyTextBox" />
+
+    <LinearLayout style="@style/MySecondBackground" >
+
+        <Button
+            android:id="@+id/btnSetBudget"
+            style="@style/MyShortButton"
+            android:layout_marginLeft="20dp"
+            android:text="Save" />
+        <Button
+            android:id="@+id/btnViewBudget"
+            style="@style/MyShortButton"
+            android:layout_marginLeft="20dp"
+            android:text="View" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/MyShortButton"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>

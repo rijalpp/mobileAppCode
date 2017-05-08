@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="app_name">MultipleActivities</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_multiple_activities">MultipleActivities</string>
+    <string name="title_activity_second_screen"></string>
+	<string name="okayButtonText">Go To Second Screen</string>
+	<string name="inputButtonText">Done =)</string>
+	<string name="cancelButtonText">Cancel =(</string>
+	<string name="inputHint">Enter Name</string>
+	<string name="inputHintQty">00</string>
+</resources>
